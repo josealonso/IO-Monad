@@ -53,7 +53,7 @@ object UserCreationExercises {
   def parseYesNo(line: String): Boolean =
     line match {
       case "Y" => true
-      case "Y" => false
+      case "N" => false
       case other => throw new IllegalArgumentException("""Expected "Y" or "N" but received $other """)
     }
   // 2. How can we test `readSubscribeToMailingList`?
