@@ -6,7 +6,6 @@ import exercises.action.imperative.UserCreationExercises._
 import exercises.action.DateGenerator._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
-import org.scalatest.Assertion
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -26,13 +25,15 @@ class UserCreationExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropert
   }
 
   test("readSubscribeToMailingList example") {
-    val inputs  = ListBuffer("N")
-    val outputs = ListBuffer.empty[String]
-    val console = Console.mock(inputs, outputs)
-    val result  = readSubscribeToMailingList(console)
+    forAll { (yesNo: Boolean) =>
+      val inputs = ListBuffer(formatYesNo(yesNo))
+      val outputs = ListBuffer.empty[String]
+      val console = Console.mock(inputs, outputs)
+      val result = readSubscribeToMailingList(console)
 
-    assert(result == false)
-    assert(outputs.toList == List("Would you like to subscribe to our mailing list? [Y/N]"))
+      assert(result == yesNo)
+      assert(outputs.toList == List("Would you like to subscribe to our mailing list? [Y/N]"))
+    }
   }
 
   test("readSubscribeToMailingList example failure") {
@@ -42,14 +43,17 @@ class UserCreationExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropert
     assert(result.isFailure)
   }
 
-  ignore("readDateOfBirth example success") {
-    val console = Console.mock(ListBuffer("21-07-1986"), ListBuffer())
-    val result  = readDateOfBirth(console)
+  test("readDateOfBirth example success") {
+    forAll { (dateOfBirth: LocalDate) =>
+      val console = Console.mock(ListBuffer(dateOfBirthFormatter.format(dateOfBirth)), ListBuffer())
+      val result = readDateOfBirth(console)
 
-    assert(result == LocalDate.of(1986, 7, 21))
+      assert(result == dateOfBirth)
+    }
+
   }
 
-  ignore("readDateOfBirth example failure") {
+  test("readDateOfBirth example failure") {
     val console = Console.mock(ListBuffer("21/07/1986"), ListBuffer())
     val result  = Try(readDateOfBirth(console))
 

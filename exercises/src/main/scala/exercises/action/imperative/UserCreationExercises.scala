@@ -1,8 +1,9 @@
 package exercises.action.imperative
 
+import exercises.action.fp.console.UserCreationServiceApp.console
+
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDate}
-
 import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.{Failure, Success, Try}
@@ -50,6 +51,9 @@ object UserCreationExercises {
     parseYesNo(line)
   }
 
+  def formatYesNo(yesNo: Boolean): String =
+    if (yesNo) "Y" else "N"
+
   def parseYesNo(line: String): Boolean =
     line match {
       case "Y" => true
@@ -83,8 +87,11 @@ object UserCreationExercises {
   // Throws an exception.
   // Note: You can use `LocalDate.parse` to parse a String into a LocalDate.
   // Note: You can use the formatter `dateOfBirthFormatter` (in scope).
-  def readDateOfBirth(console: Console): LocalDate =
-    ???
+  def readDateOfBirth(console: Console): LocalDate = {
+    console.writeLine("What's your date of birth? [dd-mm-yyyy]")
+    val line = console.readLine()
+    LocalDate.parse(line, dateOfBirthFormatter)
+  }
 
   // 4. Implement a testable version of `readUser`.
   // For example,
