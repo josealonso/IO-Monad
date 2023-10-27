@@ -110,8 +110,8 @@ object UserCreationExercises {
   //       and update the signature of `readUser`.
   def readUser(console: Console, clock: Clock): User = {
     val name = readName(console)
-    val dateOfBirth = readDateOfBirth(console)
-    val subscribed = readSubscribeToMailingList(console)
+    val dateOfBirth = readDateOfBirthRetry(console, maxAttempt = 3)
+    val subscribed = readSubscribeToMailingListRetry(console, maxAttempt = 3)
     val now = clock.now()
     val user = User(name, dateOfBirth, subscribed, now)
     console.writeLine(s"User is $user")
