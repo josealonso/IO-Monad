@@ -14,24 +14,13 @@ import scala.util.{Failure, Success, Try}
 object UserCreationApp extends App {
   import UserCreationExercises._
 
-  readUser()
+  readUser(Console.system, Clock.system)
 }
 
 object UserCreationExercises {
   val dateOfBirthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-uuuu")
 
-  case class User(name: String, dateOfBirth: LocalDate, createdAt: Instant)
-
-  def readUser(): User = {
-    println("What's your name?")
-    val name = StdIn.readLine()
-    println("What's your date of birth? [dd-mm-yyyy]")
-    val dateOfBirth = LocalDate.parse(StdIn.readLine(), dateOfBirthFormatter)
-    val now         = Instant.now()
-    val user        = User(name, dateOfBirth, now)
-    println(s"User is $user")
-    user
-  }
+  case class User(name: String, dateOfBirth: LocalDate, subscribedToMailingList: Boolean, createdAt: Instant)
 
   // 1. Implement `readSubscribeToMailingList` which asks if the user wants to
   // subscribe to our mailing list. They can answer "Y" for yes or "N" for No.
@@ -93,6 +82,11 @@ object UserCreationExercises {
     LocalDate.parse(line, dateOfBirthFormatter)
   }
 
+  def readName(console: Console): String = {
+    console.writeLine("What's your name?")
+    console.readLine()  // assume it is non-empty
+  }
+
   // 4. Implement a testable version of `readUser`.
   // For example,
   // [Prompt] What's your name?
@@ -111,8 +105,15 @@ object UserCreationExercises {
   // Note: You will need to add `subscribedToMailingList: Boolean` field to `User`.
   // Note: How can you mock the current time? Check the `Clock` class in this package
   //       and update the signature of `readUser`.
-  def readUser(console: Console): User =
-    ???
+  def readUser(console: Console, clock: Clock): User = {
+    val name = readName(console)
+    val dateOfBirth = readDateOfBirth(console)
+    val subscribed = readSubscribeToMailingList(console)
+    val now = clock.now()
+    val user = User(name, dateOfBirth, subscribed, now)
+    console.writeLine(s"User is $user")
+    user
+  }
 
   //////////////////////////////////////////////
   // PART 2: Error handling
