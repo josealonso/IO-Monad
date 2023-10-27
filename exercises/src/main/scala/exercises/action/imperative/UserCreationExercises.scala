@@ -18,7 +18,7 @@ object UserCreationApp extends App {
 }
 
 object UserCreationExercises {
-  val dateOfBirthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+  val dateOfBirthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-uuuu")
 
   case class User(name: String, dateOfBirth: LocalDate, createdAt: Instant)
 
