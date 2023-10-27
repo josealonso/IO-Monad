@@ -6,6 +6,7 @@ import exercises.action.imperative.UserCreationExercises._
 import exercises.action.DateGenerator._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
+import org.scalatest.Assertion
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -18,13 +19,13 @@ import scala.util.{Failure, Success, Try}
 class UserCreationExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
 
   test("parseYesNo") {
-    assert(parseYesNo(line = "Y") == true)
-    assert(parseYesNo(line = "N") == false)
+    assert(parseYesNo("Y") == true)
+    assert(parseYesNo("N") == false)
 
     assert(Try(parseYesNo("Never")).isFailure)
   }
 
-  ignore("readSubscribeToMailingList example") {
+  test("readSubscribeToMailingList example") {
     val inputs  = ListBuffer("N")
     val outputs = ListBuffer.empty[String]
     val console = Console.mock(inputs, outputs)
@@ -34,7 +35,7 @@ class UserCreationExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropert
     assert(outputs.toList == List("Would you like to subscribe to our mailing list? [Y/N]"))
   }
 
-  ignore("readSubscribeToMailingList example failure") {
+  test("readSubscribeToMailingList example failure") {
     val console = Console.mock(ListBuffer("Never"), ListBuffer())
     val result  = Try(readSubscribeToMailingList(console))
 
