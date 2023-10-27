@@ -139,17 +139,16 @@ object UserCreationExercises {
   // Note: `maxAttempt` must be greater than 0, if not you should throw an exception.
   // Note: You can implement the retry logic using recursion or a for/while loop. I suggest
   //       trying both possibilities.
-  @tailrec
   def readSubscribeToMailingListRetry(console: Console, maxAttempt: Int): Boolean = {
-    require(maxAttempt > 0, "maxAttempt must be greater than 0")
-    console.writeLine("Would you like to subscribe to our mailing list? [Y/N]")
-    val line = console.readLine()
-    Try(parseYesNo(line)) match {
-      case Success(yesNo) => yesNo
-      case Failure(exception) =>
-        console.writeLine("""Incorrect format, enter "Y" for Yes or "N" for "No"""")
-        if (maxAttempt == 1) throw exception
-        else readSubscribeToMailingListRetry(console, maxAttempt - 1)
+    retry(maxAttempt) {
+      console.writeLine("Would you like to subscribe to our mailing list? [Y/N]")
+      val line = console.readLine()
+      Try(parseYesNo(line)) match {
+        case Success(yesNo) => yesNo
+        case Failure(exception) =>
+          console.writeLine("""Incorrect format, enter "Y" for Yes or "N" for "No"""")
+          throw exception
+      }
     }
   }
 

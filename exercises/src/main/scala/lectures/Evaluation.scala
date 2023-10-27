@@ -17,7 +17,7 @@ object Evaluation {
   def otherMethod(a: Int): Unit = ???
 
   // By-name --> evaluated every time they are  accessed
-  def otherMethod2(f: () => Int): Unit = ???
-  def otherMethod3(f : => Int): Unit = ???
+  def otherMethod2(number: () => Int): Unit = ???
+  def otherMethod3(number: => Int): Unit = ???
 
 }
