@@ -27,12 +27,12 @@ package object imperative {
   // Note: Tests are in the `exercises.action.imperative.ImperativeActionTest`
   @tailrec
   def retry[A](maxAttempt: Int)(action: => A): A = {
-    require(maxAttempt > 0, "maxAttempt must be greater than zero")
-    Try(action) match {
+    if (maxAttempt <= 0) throw new IllegalArgumentException("maxAttempt must be greater than zero")
+    else if (maxAttempt == 1) action
+    else
+      Try(action) match {
       case Success(value) => value
-      case Failure(exception) =>
-        if (maxAttempt == 1) throw exception
-        else retry(maxAttempt - 1)(action)
+      case Failure(_) => retry(maxAttempt - 1)(action)
     }
   }
 
