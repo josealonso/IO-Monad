@@ -143,12 +143,10 @@ object UserCreationExercises {
     retry(maxAttempt) {
       console.writeLine("Would you like to subscribe to our mailing list? [Y/N]")
       val line = console.readLine()
-      Try(parseYesNo(line)) match {
-        case Success(yesNo) => yesNo
-        case Failure(exception) =>
-          console.writeLine("""Incorrect format, enter "Y" for Yes or "N" for "No"""")
-          throw exception
-      }
+      onError(
+        action = parseYesNo(line),
+        cleanup = _ => console.writeLine("""Incorrect format, enter "Y" for Yes or "N" for "No"""")
+      )
     }
   }
 
@@ -167,17 +165,15 @@ object UserCreationExercises {
   // [Prompt] Incorrect format, for example enter "18-03-2001" for 18th of March 2001
   // Throws an exception because the user only had 1 attempt and they entered an invalid input.
   // Note: `maxAttempt` must be greater than 0, if not you should throw an exception.
-  @tailrec
+
   def readDateOfBirthRetry(console: Console, maxAttempt: Int): LocalDate = {
-    require(maxAttempt > 0, "maxAttempt must be greater than 0")
-    console.writeLine("What's your date of birth? [dd-mm-yyyy]")
-    val line = console.readLine()
-    Try(parseDateOfBirth(line)) match {
-      case Success(date) => date
-      case Failure(exception) =>
-        console.writeLine("""Incorrect format, for example enter "18-03-2001" for 18th of March 2001""")
-        if (maxAttempt == 1) throw exception
-        else readDateOfBirthRetry(console, maxAttempt - 1)
+    retry(maxAttempt) {
+      console.writeLine("What's your date of birth? [dd-mm-yyyy]")
+      val line = console.readLine()
+      onError(
+        action = parseDateOfBirth(line),
+        cleanup = _ => console.writeLine("""Incorrect format, for example enter "18-03-2001" for 18th of March 2001""")
+      )
     }
   }
 
