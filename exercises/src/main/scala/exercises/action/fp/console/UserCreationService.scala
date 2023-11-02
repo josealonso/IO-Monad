@@ -20,6 +20,7 @@ object UserCreationServiceApp extends App {
 
 class UserCreationService(console: Console, clock: Clock) {
   import UserCreationService._
+  import console.{readLine, writeLine}
 
   // 1. `readName` works as we expect, but `IO` makes the code
   // more difficult to read by requiring:
@@ -30,11 +31,9 @@ class UserCreationService(console: Console, clock: Clock) {
   // the method `andThen` on the `IO` trait.
   // Then, we'll refactor `readName` with `andThen`.
   // Note: You can find tests in `exercises.action.fp.console.UserCreationServiceTest`
-  val readName: IO[String] =
-    IO {
-      console.writeLine("What's your name?").unsafeRun()
-      console.readLine.unsafeRun()
-    }
+  val readName: IO[String] = {
+    writeLine("What's your name?").andThen(readLine)
+  }
 
   // 2. Refactor `readDateOfBirth` so that the code combines the three internal `IO`
   // instead of executing each `IO` one after another using `unsafeRun`.

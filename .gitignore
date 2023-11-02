@@ -23,7 +23,7 @@ target/
 project/project/
 _site/
 .bsp/
-
+.attach*
 ## Metals files to ignore
 .metals/
 .bloop/
