@@ -40,29 +40,31 @@ class UserCreationService(console: Console, clock: Clock) {
   // For example, try to use `andThen`.
   // If it doesn't work investigate the methods `map` and `flatMap` on the `IO` trait.
   val readDateOfBirth: IO[LocalDate] = {
-    writeLine("What's your date of birth? [dd-mm-yyyy]")
-      .andThen(readLine)
-      .flatMap(line => parseDateOfBirth(line))
+    for {
+      _           <- writeLine("What's your date of birth? [dd-mm-yyyy]")
+      line        <- readLine
+      dateOfBirth <- parseDateOfBirth(line)
+    } yield dateOfBirth
   }
 
   // 3. Refactor `readSubscribeToMailingList` and `readUser` using the same techniques as `readDateOfBirth`.
   val readSubscribeToMailingList: IO[Boolean] = {
-    writeLine("Would you like to subscribe to our mailing list? [Y/N]")
-      .andThen(readLine)
-      .flatMap(parseLineToBoolean)
+    for {
+      _          <- writeLine("Would you like to subscribe to our mailing list? [Y/N]")
+      line       <- readLine
+      yesNo <- parseLineToBoolean(line)
+    } yield yesNo
   }
 
   val readUser: IO[User] = {
-    readName.flatMap { name =>
-      readDateOfBirth.flatMap { dateOfBirth =>
-        readSubscribeToMailingList.flatMap { subscribed =>
-          clock.now.flatMap { now =>
-            val user = User(name, dateOfBirth, subscribed, now)
-            console.writeLine(s"User is $user").map(_ => user)
-          }
-        }
-      }
-    }
+    for {
+      name        <- readName
+      dateOfBirth <- readDateOfBirth
+      subscribed  <- readSubscribeToMailingList
+      now         <- clock.now
+      user = User(name, dateOfBirth, subscribed, now)
+      _ <- writeLine(s"User is $user")
+    } yield user
   }
 
   //////////////////////////////////////////////
@@ -73,6 +75,10 @@ class UserCreationService(console: Console, clock: Clock) {
 
   // 5. Refactor `readSubscribeToMailingList` and `readUser` using a for comprehension.
 
+  /*
+    For comprehension is syntactic sugar for
+    - a series of flatMaps and a map in the end.
+   */
   //////////////////////////////////////////////
   // PART 3: Error handling
   //////////////////////////////////////////////
