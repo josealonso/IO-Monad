@@ -65,8 +65,8 @@ class UserCreationService(console: Console, clock: Clock) {
   val readUser: IO[User] = {
     for {
       name        <- readName
-      dateOfBirth <- readDateOfBirth
-      subscribed  <- readSubscribeToMailingList
+      dateOfBirth <- readDateOfBirth.retry(maxAttempt = 3)
+      subscribed  <- readSubscribeToMailingList.retry(maxAttempt = 3)
       now         <- clock.now
       user = User(name, dateOfBirth, subscribed, now)
       _ <- writeLine(s"User is $user")
