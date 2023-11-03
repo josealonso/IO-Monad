@@ -109,6 +109,17 @@ trait IO[A] {
       case Failure(exception) => callback(exception)
     }
 
+  /*
+         SUMMARY of refactoring functions on the IO trait
+         ================================================
+     - unsafeRun is dangerous.
+     - flatMap is used to composing actions sequentially.
+       Used to combine IOs together.
+     - attempt is used to figuring out if an action is successful.
+       Used in error handling combinators.
+   */
+
+
   //////////////////////////////////////////////
   // Concurrent IO
   //////////////////////////////////////////////
