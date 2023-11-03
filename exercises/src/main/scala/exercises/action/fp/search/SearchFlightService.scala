@@ -29,8 +29,7 @@ object SearchFlightService {
         for {
           flights1 <- client1.search(from, to, date)
           flights2 <- client2.search(from, to, date)
-          combined = (flights1 ++ flights2).sorted(SearchResult.bestOrdering)
-        } yield SearchResult(combined)
+        } yield SearchResult(flights1 ++ flights2)
       }
 
      }
