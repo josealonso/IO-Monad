@@ -74,20 +74,13 @@ trait IO[A] {
   // IO(throw new Exception("Boom!")).onError(logError).unsafeRun()
   // prints "Got an error: Boom!" and throws new Exception("Boom!")
   def onError[Other](cleanup: Throwable => IO[Other]): IO[A] = {
-    attempt.flatMap {
-      case Success(value) => IO(value)
-      case Failure(e)     => cleanup(e).andThen(IO.fail(e))
-    }
+    handleErrorWith(e => cleanup(e) *> IO.fail(e))
   }
 
   def retry(maxAttempt: Int): IO[A] = {
     if (maxAttempt <= 0) IO.fail(new IllegalArgumentException("maxAttempt must be greater than 0"))
     else if (maxAttempt == 1) this
-    else
-      attempt.flatMap {
-        case Success(value) => IO(value)
-        case Failure(_)     => retry(maxAttempt - 1)
-      }
+    else handleErrorWith(e => retry(maxAttempt - 1))
   }
 
   // Checks if the current IO is a failure or a success.
@@ -111,7 +104,10 @@ trait IO[A] {
   //   logError(e).andThen(emailClient.send(user.email, "Sorry something went wrong"))
   // )
   def handleErrorWith(callback: Throwable => IO[A]): IO[A] =
-    ???
+    attempt.flatMap {
+      case Success(value) => IO(value)
+      case Failure(exception) => callback(exception)
+    }
 
   //////////////////////////////////////////////
   // Concurrent IO
