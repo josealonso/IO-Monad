@@ -6,6 +6,7 @@ import exercises.action.fp.IO
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.util.Try
 
 // This represent the main API of Lambda Corp.
 // `search` is called whenever a user press the "Search" button on the website.
@@ -26,9 +27,14 @@ object SearchFlightService {
   def fromTwoClients(client1: SearchFlightClient, client2: SearchFlightClient): SearchFlightService =
      new SearchFlightService {
       def search(from: Airport, to: Airport, date: LocalDate): IO[SearchResult] = {
+        def searchByClient(client: SearchFlightClient) =
+          client
+            .search(from, to, date)
+            .handleErrorWith(e => IO.debug(s"An error occurred: $e") andThen IO(Nil))
+
         for {
-          flights1 <- client1.search(from, to, date)
-          flights2 <- client2.search(from, to, date)
+          flights1 <- searchByClient(client1)
+          flights2 <- searchByClient(client2)
         } yield SearchResult(flights1 ++ flights2)
       }
 
