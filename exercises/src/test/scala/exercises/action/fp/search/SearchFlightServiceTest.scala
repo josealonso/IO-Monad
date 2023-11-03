@@ -37,18 +37,13 @@ class SearchFlightServiceTest extends AnyFunSuite with ScalaCheckDrivenPropertyC
   }
 
   test("fromTwoClients should handle errors gracefully") {
-    val now = Instant.now()
-    val today = LocalDate.now()
+//    forAll(airportGen, airportGen, dateGen, Gen.listOf(flightGen), arbitrary[Throwable]) {
+    forAll(airportGen, airportGen, dateGen, clientGen, clientGen) { (from, to, date, client1, client2) =>
+      val service = SearchFlightService.fromTwoClients(client1, client2)
+      val result = service.search(from, to, date).attempt.unsafeRun()
 
-    val flight1 = Flight("1", "BA", parisOrly, londonGatwick, now, Duration.ofMinutes(100), 0, 89.5, "")
-
-    val client1 = SearchFlightClient.constant(IO(List(flight1)))
-    val client2 = SearchFlightClient.constant(IO.fail(new Exception("Boom")))
-
-    val service = SearchFlightService.fromTwoClients(client1, client2)
-    val result = service.search(parisOrly, londonGatwick, today).attempt.unsafeRun()
-
-    assert(result. isSuccess)
+      assert(result.isSuccess)
+    }
   }
 
 }
