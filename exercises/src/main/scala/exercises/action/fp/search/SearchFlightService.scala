@@ -62,7 +62,11 @@ object SearchFlightService {
             .search(from, to, date)
             .handleErrorWith(e => IO.debug(s"An error occurred: $e") andThen IO(Nil))
 
-        clients.map(searchByClient).sequence
+        // map + flatten = flatMap
+        // map + fold = foldMap
+        // map + sequence = traverse
+        clients
+          .traverse(searchByClient)
           .map(_.flatten)
           .map(SearchResult(_))
       }
