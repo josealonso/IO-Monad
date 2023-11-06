@@ -15,6 +15,7 @@ package object fp {
 
   // extend the List API when the List contains IO
   implicit class ListIOExtension[A](values: List[IO[A]]) {
+    // Extension method in Scala 2
     def sequence: IO[List[A]] =
       IO.sequence(values)
 

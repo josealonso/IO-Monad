@@ -181,6 +181,11 @@ object IO {
     )
       .map(_.reverse)
 
+  /*
+    Use map and sequence whe we don't know in advance how many IOs we have.
+
+   */
+
   // `traverse` is a shortcut for `map` followed by `sequence`, similar to how
   // `flatMap`  is a shortcut for `map` followed by `flatten`
   // For example,
