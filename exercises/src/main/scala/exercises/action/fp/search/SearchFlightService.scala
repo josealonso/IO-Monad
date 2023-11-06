@@ -62,17 +62,9 @@ object SearchFlightService {
             .search(from, to, date)
             .handleErrorWith(e => IO.debug(s"An error occurred: $e") andThen IO(Nil))
 
-        def searchAllClients(clients: List[SearchFlightClient]): IO[List[Flight]] =
-          clients match {
-            case Nil => IO(Nil)
-            case client :: otherClients =>
-              for {
-                flights1 <- searchByClient(client)
-                flights2 <- searchAllClients(otherClients)
-              } yield flights1 ++ flights2
-          }
-
-        searchAllClients(clients).map(SearchResult(_))
+        IO.sequence(clients.map(searchByClient))
+          .map(_.flatten)
+          .map(SearchResult(_))
       }
     }
 
