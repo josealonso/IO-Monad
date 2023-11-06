@@ -172,8 +172,16 @@ object IO {
   // fetches user 1111, then fetches user 2222 and finally fetches user 3333.
   // If no error occurs, it returns the users in the same order:
   // List(User(1111, ...), User(2222, ...), User(3333, ...))
-  def sequence[A](actions: List[IO[A]]): IO[List[A]] =
-    ???
+  def sequence[A](actions: List[IO[A]]): IO[List[A]] = {
+    actions match {
+      case Nil => IO(Nil)
+      case head :: next =>
+        for {
+          result1 <- head
+          result2 <- sequence(next)
+        } yield result1 :: result2
+    }
+  }
 
   // `traverse` is a shortcut for `map` followed by `sequence`, similar to how
   // `flatMap`  is a shortcut for `map` followed by `flatten`
