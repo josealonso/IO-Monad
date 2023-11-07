@@ -24,7 +24,7 @@ object SearchFlightService {
   // (see `SearchResult` companion object).
   // Note: A example based test is defined in `SearchFlightServiceTest`.
   //       You can also defined tests for `SearchResult` in `SearchResultTest`
-  def fromTwoClients(client1: SearchFlightClient, client2: SearchFlightClient): SearchFlightService =
+  def fromTwoClients(client1: SearchFlightClient, client2: SearchFlightClient)(ec: ExecutionContext): SearchFlightService =
      new SearchFlightService {
       def search(from: Airport, to: Airport, date: LocalDate): IO[SearchResult] = {
         def searchByClient(client: SearchFlightClient) =
@@ -32,10 +32,9 @@ object SearchFlightService {
             .search(from, to, date)
             .handleErrorWith(e => IO.debug(s"An error occurred: $e") andThen IO(Nil))
 
-        for {
-          flights1 <- searchByClient(client1)
-          flights2 <- searchByClient(client2)
-        } yield SearchResult(flights1 ++ flights2)
+        searchByClient(client1)
+          .parZip(searchByClient(client2))(ec)
+          .map { case (flights1, flights2) => SearchResult(flights1 ++ flights2) }
       }
 
      }
