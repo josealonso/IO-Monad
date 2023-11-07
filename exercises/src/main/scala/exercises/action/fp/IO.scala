@@ -190,8 +190,7 @@ object IO {
       .map(_.reverse)
 
   /*
-     Use map and sequence whe we don't know in advance how many IOs we have.
-
+     Use map and sequence when we don't know in advance how many IOs we have.
    */
 
   // `traverse` is a shortcut for `map` followed by `sequence`, similar to how
@@ -216,7 +215,11 @@ object IO {
   // List(User(1111, ...), User(2222, ...), User(3333, ...))
   // Note: You may want to use `parZip` to implement `parSequence`.
   def parSequence[A](actions: List[IO[A]])(ec: ExecutionContext): IO[List[A]] =
-    ???
+    actions
+      .foldLeft(IO(List.empty[A]))((state, action) =>
+      state.parZip(action)(ec).map { case (result1, result2) => result2 :: result1}
+      )
+      .map(_.reverse)
 
   // `parTraverse` is a shortcut for `map` followed by `parSequence`, similar to how
   // `flatMap`     is a shortcut for `map` followed by `flatten`
