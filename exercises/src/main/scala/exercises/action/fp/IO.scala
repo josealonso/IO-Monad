@@ -135,7 +135,15 @@ trait IO[A] {
   // Runs both the current IO and `other` concurrently,
   // then combine their results into a tuple
   def parZip[Other](other: IO[Other])(ec: ExecutionContext): IO[(A, Other)] =
-    ???
+//    zip(other)
+  IO {
+    val future1 = Future { this.unsafeRun() }(ec)
+    val future2 = Future { other.unsafeRun() }(ec)
+
+    val zipped = future1.zip(future2)
+
+    Await.result(zipped, Duration.Inf)
+  }
 
 }
 
@@ -182,7 +190,7 @@ object IO {
       .map(_.reverse)
 
   /*
-    Use map and sequence whe we don't know in advance how many IOs we have.
+     Use map and sequence whe we don't know in advance how many IOs we have.
 
    */
 
